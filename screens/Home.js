@@ -7,9 +7,9 @@ import { FlatList } from 'react-native-gesture-handler';
 
 const Home = ({navigation}) => {
     const [items, setItems] = useState([
-        {id: '1', text: "Items"},
-        {id: '2', text: "Customers"},
-        {id: '3', text: "Invoices"}
+        {id: '1', text: "Items", description: "Add any item you would like for your store"},
+        {id: '2', text: "Customers", description: "Here is a list of your Customers feel free to add remove and change any of the available data"},
+        {id: '3', text: "Invoices", description: "Send to your Customers the invoice"}
       ])
     return (
         <View style={styles.bigcontainer}>
