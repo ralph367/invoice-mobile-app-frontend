@@ -10,7 +10,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const AddCustomers = ({navigation}) => {
-    const addCustomer = (firstname, secondname) => {
+    const addCustomer = (firstname, secondname, email) => {
         fetch('http://192.168.1.113:8080/api/customers', {
           method: 'POST',
           headers: {
@@ -19,7 +19,8 @@ const AddCustomers = ({navigation}) => {
           },
           body: JSON.stringify({
             firstname: firstname,
-            secondname: secondname
+            secondname: secondname, 
+            email: email
           })
         }).then(() => navigation.navigate("Customers"))
         .catch((error) => console.error(error));
@@ -29,6 +30,9 @@ const AddCustomers = ({navigation}) => {
     
       const [secondname, setSecondName] = useState('');
       const onChangeSecondName = value => setSecondName(value);
+
+      const [email, setEmail] = useState('');
+      const onChangeEmail = value => setEmail(value);
       return (
         <View>
           <TextInput
@@ -43,10 +47,17 @@ const AddCustomers = ({navigation}) => {
             onChangeText={onChangeSecondName}
             value={secondname}
           />
+          <TextInput
+            placeholder="Email Address"
+            style={styles.input}
+            autoCompleteType='email'
+            onChangeText={onChangeEmail}
+            value={email}
+          />
           <TouchableOpacity
             style={styles.btn}
             onPress={() => {
-              addCustomer(firstname,secondname);
+              addCustomer(firstname,secondname, email);
             }}>
             <Text style={styles.btnText}>
               <Icon name="plus" size={20} /> Add Customer

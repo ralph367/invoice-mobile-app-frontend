@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
-import { ActivityIndicator, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, View, Text, StyleSheet, TouchableOpacity, Button, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useIsFocused } from "@react-navigation/native";
 
@@ -20,6 +20,18 @@ const Invoices = ({ navigation }) => {
         }
     }, [isFocused]);
 
+    const sendEmail = (id) => {
+        fetch('http://192.168.1.113:8080/api/invoices/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: id
+            })
+        }).catch((error) => console.error(error));
+    };
 
     return (
         <View style={{ flex: 1, padding: 24 }}>
@@ -40,6 +52,10 @@ const Invoices = ({ navigation }) => {
                             onPress={() => { navigation.navigate("EditInvoices", { id: item.id }) }}>
                             <View style={styles.listItemView}>
                                 <Text style={styles.listItemText}>{item.name}</Text>
+                                <Button
+                                    title="Send by Email"
+                                    onPress={() => sendEmail(item.id)}
+                                />
                             </View>
                         </TouchableOpacity>
                     )}

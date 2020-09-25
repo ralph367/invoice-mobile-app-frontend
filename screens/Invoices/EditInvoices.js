@@ -9,13 +9,19 @@ import { useIsFocused } from "@react-navigation/native";
 
 const EditInvoices = ({ route, navigation }) => {
   const [isLoading, setLoading] = useState(true);
-  const [firstname, setFirstName] = useState('');
-  const [secondname, setSecondName] = useState('');
-  const onChangeFirstName = value => setFirstName(value);
-  const onChangeSecondName = value => setSecondName(value);
   const id = route.params.id;
   const [selectedItems, setSelectedValues] = useState([]);
   const [data, setData] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedCurrency, setSelectedCurrency] = useState('');
+
+  const [invoiceName, setInvoiceName] = useState('');
+  const onChangeInvoiceName = value => setInvoiceName(value);
+
+  const [note, setNote] = useState('');
+  const onChangeNote = value => setNote(value);
+
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -33,6 +39,8 @@ const EditInvoices = ({ route, navigation }) => {
       fetch('http://192.168.1.113:8080/api/invoices/' + id)
         .then((response) => response.json())
         .then((json) => {
+          setInvoiceName(json[0].name);
+          setNote(json[0].description);
           setSelectedValue(json[0].CustomerId);
           json[0].Items.forEach((item, key) => setSelectedValues(selectedItems => [...selectedItems, item.id]))
         })
@@ -49,6 +57,8 @@ const EditInvoices = ({ route, navigation }) => {
       if( selectedItems.includes(item.id)) 
         price += item.price
     })
+    if( selectedCurrency == 'euro')
+      price = price/1.16
     fetch('http://192.168.1.113:8080/api/invoices/'+ id, {
       method: 'PUT',
       headers: {
@@ -56,10 +66,11 @@ const EditInvoices = ({ route, navigation }) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        name: firstname,
+        name: invoiceName,
         CustomerId: selectedItems,
         itemId: x,
-        price: price
+        price: price,
+        description: note
       })
     }).then(() => navigation.navigate("Invoices"))
       .catch((error) => console.error(error));
@@ -77,8 +88,7 @@ const EditInvoices = ({ route, navigation }) => {
     }).then(() => navigation.navigate("Invoices"))
       .catch((error) => console.error(error));
   };
-  const [customers, setCustomers] = useState([]);
-  const [selectedValue, setSelectedValue] = useState('');
+
 
   return (
     <View>
@@ -99,22 +109,32 @@ const EditInvoices = ({ route, navigation }) => {
         onSelectedItemsChange={item => setSelectedValues(item)}
         selectedItems={selectedItems}
       />
+      
       <TextInput
-        placeholder="First Name"
+        placeholder="Invoice Name"
         style={styles.input}
-        onChangeText={onChangeFirstName}
-        value={firstname}
+        onChangeText={onChangeInvoiceName}
+        value={invoiceName}
       />
       <TextInput
-        placeholder="Second"
+        placeholder="Description/Note"
         style={styles.input}
-        onChangeText={onChangeSecondName}
-        value={secondname}
+        onChangeText={onChangeNote}
+        value={note}
       />
+      <Picker
+        selectedValue={selectedCurrency}
+        onValueChange={(itemValue, itemIndex) => setSelectedCurrency(itemValue)}
+      >
+        <Picker.Item label="Select Curency" value="" />
+        <Picker.Item label="Dollar" value="dollar" />
+        <Picker.Item label="Euro" value="euro" />
+        
+      </Picker>
       <TouchableOpacity
         style={styles.btn}
         onPress={() => {
-          updateItem(firstname, secondname);
+          updateItem();
         }}>
         <Text style={styles.btnText}>
           <Icon name="plus" size={20} /> Save changes

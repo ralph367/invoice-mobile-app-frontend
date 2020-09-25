@@ -79,7 +79,7 @@ const Items = ({ route, navigation }) => {
         keyboardType='numeric'
         style={styles.input}
         onChangeText={onChangeDescription}
-        value={price}
+        value={price.toString()}
       />
       <TouchableOpacity
         style={styles.btn}

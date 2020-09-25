@@ -41,7 +41,7 @@ const Customers = ({ navigation }) => {
                             style={styles.listItem}
                             onPress={() => { navigation.navigate("EditCustomers", { id: item.id }) }}>
                             <View style={styles.listItemView}>
-                                <Text style={styles.listItemText}>{item.firstname}</Text>
+                                <Text style={styles.listItemText}>{item.firstname} {item.secondname}</Text>
                             </View>
                         </TouchableOpacity>
                     )}

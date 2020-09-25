@@ -10,7 +10,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const AddItems = ({navigation}) => {
-    const addItem = (item) => {
+    const addItem = () => {
         fetch('http://192.168.1.113:8080/api/items', {
           method: 'POST',
           headers: {
@@ -18,27 +18,44 @@ const AddItems = ({navigation}) => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            name: item
+            name: itemName,
+            price: itemPrice,
+            description: itemDescription
           })
         }).then(() => navigation.navigate("Items"))
         .catch((error) => console.error(error));
       };
-      const [text, setText] = useState('');
-      const onChange = textValue => setText(textValue);
+      const [itemName, setItemName] = useState('');
+      const onChangeItemName = textValue => setItemName(textValue);
+      const [itemPrice, setItemPrice] = useState('');
+      const onChangeItemPrice = textValue => setItemPrice(textValue)
+      const [itemDescription, setItemDescription] = useState('');
+      const onChangeItemDescription = textValue => setItemDescription(textValue)
     
       return (
         <View>
           <TextInput
-            placeholder="Add Item..."
+            placeholder="Item Name"
             style={styles.input}
-            onChangeText={onChange}
-            value={text}
+            onChangeText={onChangeItemName}
+            value={itemName}
+          />
+          <TextInput
+            placeholder="Item Price"
+            style={styles.input}
+            onChangeText={onChangeItemPrice}
+            value={itemPrice}
+          />
+          <TextInput
+            placeholder="Description"
+            style={styles.input}
+            onChangeText={onChangeItemDescription}
+            value={itemDescription}
           />
           <TouchableOpacity
             style={styles.btn}
             onPress={() => {
-              addItem(text);
-              setText('');
+              addItem(itemName, itemPrice, itemDescription);
             }}>
             <Text style={styles.btnText}>
               <Icon name="plus" size={20} /> Add Item

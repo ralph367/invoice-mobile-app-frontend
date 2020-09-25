@@ -11,6 +11,10 @@ const Items = ({ route, navigation }) => {
   const [secondname, setSecondName] = useState('');
   const onChangeFirstName = value => setFirstName(value);
   const onChangeSecondName = value => setSecondName(value);
+
+  const [email, setEmail] = useState('');
+  const onChangeEmail = value => setEmail(value);
+
   const id = route.params.id;
   const isFocused = useIsFocused();
 
@@ -21,6 +25,7 @@ const Items = ({ route, navigation }) => {
         .then((json) => json.forEach(customer => {
           setFirstName(customer.firstname);
           setSecondName(customer.secondname);
+          setEmail(customer.address);
         }))
         .catch((error) => console.error(error))
         .finally(() => setLoading(false));
@@ -69,6 +74,13 @@ const Items = ({ route, navigation }) => {
         style={styles.input}
         onChangeText={onChangeSecondName}
         value={secondname}
+      />
+      <TextInput
+        placeholder="Email Address"
+        style={styles.input}
+        autoCompleteType='email'
+        onChangeText={onChangeEmail}
+        value={email}
       />
       <TouchableOpacity
         style={styles.btn}

@@ -16,8 +16,18 @@ const AddCustomers = ({ navigation }) => {
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [customers, setCustomers] = useState([]);
+  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedItems, setSelectedValues] = useState([]);
+  const [selectedCurrency, setSelectedCurrency] = useState('');
+2
+  const [invoiceName, setInvoiceName] = useState('');
+  const onChangeInvoiceName = value => setInvoiceName(value);
+
+  const [note, setNote] = useState('');
+  const onChangeNote = value => setNote(value);
 
   const isFocused = useIsFocused();
+
   useEffect(() => {
     if (isFocused) {
       fetch('http://192.168.1.113:8080/api/customers')
@@ -32,7 +42,8 @@ const AddCustomers = ({ navigation }) => {
         .finally(() => setLoading(false));
     }
   }, [isFocused]);
-  const addCustomer = (name, customerId, itemId) => {
+
+  const addCustomer = (name, customerId, itemId, note) => {
     var x = []
     var price = 0
     itemId.forEach((id, key) => {let y={id: id}; x.push(y)} )
@@ -40,6 +51,8 @@ const AddCustomers = ({ navigation }) => {
       if( itemId.includes(item.id)) 
         price += item.price
     })
+    if( selectedCurrency == 'euro')
+      price = price/1.16
     fetch('http://192.168.1.113:8080/api/invoices', {
       method: 'POST',
       headers: {
@@ -47,22 +60,15 @@ const AddCustomers = ({ navigation }) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        name: firstname,
+        name: name,
         CustomerId: customerId,
         itemId: x,
-        price: price
+        price: price,
+        description: note
       })
     }).then(() => navigation.navigate("Invoices"))
       .catch((error) => console.error(error));
   };
-  const [firstname, setFirstName] = useState('');
-  const onChangeFirstName = value => setFirstName(value);
-
-  const [secondname, setSecondName] = useState('');
-  const onChangeSecondName = value => setSecondName(value);
-  const [selectedValue, setSelectedValue] = useState('');
-  const [selectedItems, setSelectedValues] = useState([]);
-
 
   return (
     <View>
@@ -84,15 +90,30 @@ const AddCustomers = ({ navigation }) => {
         selectedItems={selectedItems}
       />
       <TextInput
-        placeholder="First Name"
+        placeholder="Invoice Name"
         style={styles.input}
-        onChangeText={onChangeFirstName}
-        value={firstname}
+        onChangeText={onChangeInvoiceName}
+        value={invoiceName}
       />
+      <TextInput
+        placeholder="Description/Note"
+        style={styles.input}
+        onChangeText={onChangeNote}
+        value={note}
+      />
+            <Picker
+        selectedValue={selectedCurrency}
+        onValueChange={(itemValue, itemIndex) => setSelectedCurrency(itemValue)}
+      >
+        <Picker.Item label="Select Curency" value="" />
+        <Picker.Item label="Dollar" value="dollar" />
+        <Picker.Item label="Euro" value="euro" />
+        
+      </Picker>
       <TouchableOpacity
         style={styles.btn}
         onPress={() => {
-          addCustomer(firstname, selectedValue, selectedItems);
+          addCustomer(invoiceName, selectedValue, selectedItems, note);
         }}>
         <Text style={styles.btnText}>
           <Icon name="plus" size={20} /> Add Customer
